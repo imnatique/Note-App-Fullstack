@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+import { post } from "../../services/ApiEndPoint";
+import toast from "react-hot-toast";
+
 function Register() {
+  const navigate = useNavigate()
   const [value, setValue] = useState({
     userName:"",
     email:"",
@@ -14,12 +18,22 @@ function Register() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    
     e.preventDefault()
     try {
-      console.log('value', value)
+      const request = await post('/auth/register', value)
+      const response = request.data
+      if(response.success) {
+        toast.success(response.message)
+        navigate('/login')
+      }
+      console.log('object', response)
     } catch (error) {
-      
+      if(error.response) {
+        toast.error(error.response.data.message)
+      }
+      console.log(error.response.data)
     }
   }
 
